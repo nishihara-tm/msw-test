@@ -1,12 +1,28 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios'
+import { ref } from 'vue';
+
+interface User {
+  id: number,
+  name: string
+}
+
+const users = ref<User[]>([])
+if(process.env.NODE_ENV === 'development') {
+  import('./mocks/browser').then(async module => {
+    await module.worker.start()
+    const res = await axios.get('/users')
+    console.log(res)
+    users.value = res.data.users
+  })
+}
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+  <div>Hello World</div>
+  <p v-for="(user, index) in users">
+    {{ user.name }}
+  </p>
 </template>
 
 <style>
