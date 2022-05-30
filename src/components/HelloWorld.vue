@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import axios from 'axios'
-
-interface User {
-  id: number,
-  name: string
-}
+import { User } from '../model'
 
 const users = ref<User[]>([])
-onMounted(async() => {
-  const res = await fetch('http://localhost:3000/users').then(async (res) => {
-    return await res.json()
-  }).catch(e => {
-    return "error"
-  })
-  users.value = res.users
+watchEffect(async() => {
+  const res = await axios('http://localhost:3000/users')
+  users.value = res.data.users
 })
 defineProps<{ msg: string }>()
 
@@ -23,11 +15,13 @@ const count = ref(0)
 
 <template>
   <h1>Hello World</h1>
+  <p>{{ msg }}</p>
 
   <p v-for="(user, index) in users">
     {{ user.name }}
   </p>
-  <button type="button" @click="count++">count is: {{ count }}</button>
+  <button type="button" @click="count++">increment</button>
+  <p>count is: {{ count }}</p>
 </template>
 
 <style scoped>
